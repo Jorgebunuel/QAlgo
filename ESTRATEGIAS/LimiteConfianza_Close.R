@@ -75,7 +75,11 @@ for (i in c(starting:nrow(Data))) {
                              ifelse((Data$Posicion[i]=="Short"&Data$Posicion[i]==Data$Posicion[i-1])|(Data$Posicion[i]=="Long"&Data$Posicion[i-1]=="Short"),-Data$RetLog[i]+Data$AcumRLogTotal[i-1],+Data$AcumRLogTotal[i-1]))
 }
 
+<<<<<<< HEAD
 #write.csv(Data,"D:/DATOS_GESTAMP/jorge_datos/TRADING_QUANTITATIVO/01Dise?oSistema/ESTRATEGIAS/limiteconfi.txt")
+=======
+write.csv(Data,"D:/DATOS_GESTAMP/jorge_datos/TRADING_QUANTITATIVO/01Dise?oSistema/ESTRATEGIAS/limiteconfi.txt")
+>>>>>>> f43e3d98bf921f64809bedb1bd9062b8081f8199
 Data%>%
   #filter(LimiteConfianza>1.08)%>%
   #filter(Datetime>"2020-09-22 02:00:00")%>%
