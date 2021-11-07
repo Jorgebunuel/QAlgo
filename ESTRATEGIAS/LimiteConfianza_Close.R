@@ -76,7 +76,7 @@ for (i in c(starting:nrow(Data))) {
 }
 
 
-#write.csv(Data,"D:/DATOS_GESTAMP/jorge_datos/TRADING_QUANTITATIVO/01Dise?oSistema/ESTRATEGIAS/limiteconfi.txt")
+write.csv(Data,"D:/DATOS_GESTAMP/jorge_datos/TRADING_QUANTITATIVO/01Dise?oSistema/ESTRATEGIAS/limiteconfi.txt")
 
 Data%>%
   #filter(LimiteConfianza>1.08)%>%
