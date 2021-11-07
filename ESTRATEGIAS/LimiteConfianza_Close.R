@@ -4,7 +4,7 @@ masterPath<-"./"
 #1V0 DIRECTORIO DE TRABAJO ##############################################################
 source(file = paste0(masterPath,"Librerias/all.R"))
 source(file = paste0(masterPath,"BIBLIOTECA/ReadFunXTB.R"))
-#hola
+#hola2
 #2v0 datos ##############################################################
 Data<-LecturaXTBForex("EURUSD","1h")
 #2v0 datos ##############################################################
