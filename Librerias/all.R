@@ -1,0 +1,15 @@
+#0V0 LIBRERIAS##############################################################
+library(GGally)
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(data.table)
+library(plotly)
+library(alphavantager)
+library(quantmod)
+#library(foreach)
+#library(quantstrat)
+#install.packages("quantstrat")
+#0V0LIBRERIAS##############################################################
