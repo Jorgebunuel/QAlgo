@@ -5,7 +5,8 @@ library(dplyr)
 #funcion de selecion de timeframe
 PathXTBDATA <- function(timeframe) {
   #path<-paste0("D:/DATOS_GESTAMP/jorge_datos/TRADING_QUANTITATIVO/XTB_VisualStudio/Data_XTB/",timeframe)
-  path<-paste0("../",timeframe)
+  #path<-paste0("../",timeframe)
+  path<-paste0(timeframe)
   return(path)
 }
 #funcion de lectura ficheros forex
