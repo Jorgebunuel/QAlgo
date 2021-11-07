@@ -8,7 +8,7 @@ source(file = paste0(masterPath,"BIBLIOTECA/ReadFunXTB.R"))
 #2v0 datos ##############################################################
 Data<-LecturaXTBForex("EURUSD","1h")
 #2v0 datos ##############################################################
-#hola
+#hola3
 #3v0 Indicadores ##############################################################
 nPeriodos<-14
 nOfset<-1
