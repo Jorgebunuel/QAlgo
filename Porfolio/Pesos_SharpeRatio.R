@@ -29,14 +29,34 @@ source(file = paste0(masterPath,"BIBLIOTECA/ReadFunXTB.R"))
 EURUSD<-LecturaXTBForex("EURUSD","1h")
 EURJPY<-LecturaXTBForex("EURJPY","1h")
 <<<<<<< HEAD
+names(EURUSD)
+
+EURUSD$Ret<-c(0,diff(log((EURUSD$Close))))
+EURJPY$Ret<-c(0,diff(log((EURJPY$Close))))
+
+EURUSD%>%
+  mutate(M=month(Datetime),Y=year(Datetime))%>%
+  group_by(M,Y)%>%
+  summarise(R=sum(Ret),sd=sd(Ret))%>%
+  ggplot(aes(x=sd,y=R,colour=as.factor(Y)))+geom_point()
 
 
-
-
-
-
-
-
+D1<-EURUSD%>%
+  mutate(M=month(Datetime),Y=year(Datetime),d=day(Datetime))%>%
+  group_by(M,Y,d)%>%
+  summarise(R=sum(Ret),sd=sd(Ret),fx="EURUSD")
+D2<-EURJPY%>%
+  mutate(M=month(Datetime),Y=year(Datetime),d=day(Datetime))%>%
+  group_by(M,Y,d)%>%
+  summarise(R=sum(Ret),sd=sd(Ret),fx="EURJPY")
+D<-rbind(D1,D2)
+D%>%
+  ggplot(aes(x=sd,y=R,colour=as.factor(M)))+geom_point()
+D%>%
+  mutate(sharpe=R/sd)%>%
+  filter(sharpe<2&sharpe>(-2))%>%
+  ggplot(aes(y=sharpe,fill=fx,x=as.factor(M)))+geom_boxplot(outlier.shape = NA)
+plot(EURUSD$Close)
 
 
 
