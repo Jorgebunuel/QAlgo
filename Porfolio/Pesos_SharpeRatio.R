@@ -66,7 +66,15 @@ table.CAPM(comparison,comparison, Rf = comparison)
 
 
 
+=======
+>>>>>>> b2dab97be56a627b05a581994d0e4fa45d22d314
 
 
+serie1<-xts(EURUSD$Close,order.by=(as.Date(EURUSD$Datetime)))
+serie2<-xts(EURJPY$Close,order.by=(as.Date(EURJPY$Datetime)))
 
+diff(log((serie1)))[-1]
+comparison <- cbind(cumsum( diff(log((serie1)))[-1]), cumsum( diff(log((serie2)))[-1]))
+colnames(comparison)  <- c("s1", "s2")
+chart.TimeSeries(comparison, legend.loc = "topleft",colorset =c("green", "red"))
 
