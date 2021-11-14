@@ -16,7 +16,10 @@ library(quantstrat)
 masterPath<-"./"
 #1V0 DIRECTORIO DE TRABAJO ##############################################################
 library(PerformanceAnalytics)
+<<<<<<< HEAD
 library(tidyquant)
+=======
+>>>>>>> b2dab97be56a627b05a581994d0e4fa45d22d314
 source(file = paste0(masterPath,"Librerias/all.R"))
 source(file = paste0(masterPath,"BIBLIOTECA/ReadFunXTB.R"))
 
@@ -25,6 +28,7 @@ source(file = paste0(masterPath,"BIBLIOTECA/ReadFunXTB.R"))
 ############################################################################################
 EURUSD<-LecturaXTBForex("EURUSD","1h")
 EURJPY<-LecturaXTBForex("EURJPY","1h")
+<<<<<<< HEAD
 
 
 
