@@ -6,7 +6,7 @@ source(file = paste0(masterPath,"Librerias/all.R"))
 source(file = paste0(masterPath,"BIBLIOTECA/ReadFunXTB.R"))
 
 #2v0 datos ##############################################################
-Data<-LecturaXTBForex("EURUSD","1h")
+Data<-LecturaXTBForex("EURUSD","1D")
 #2v0 datos ##############################################################
 
 #3v0 Indicadores ##############################################################
@@ -16,7 +16,7 @@ dsma<-3
 #############################################
 Data$aux<-(c(NULL,Lag(Data$Close,1)))
 Data$RetLog<-log(Data$Close/Data$aux)
-log(2)
+
 Data$AcumRLogTotal<-0
 Data$AcumRLogB<-0
 Data$AcumRLogC<-0
@@ -43,23 +43,34 @@ Data$LimiteConfianza<-1
 #definimos cuando devemos de iniciar el loop
 starting<-nPeriodos+max(nPeriodos,nOfset,dsma)
 i<-starting
+Data$NOperacion<-0
+Data$NdiaOperacion<-0
 for (i in c(starting:nrow(Data))) {
+  
   #              up_trend   := close[1] > up_trend[1]   ?             max(          up_lev,           up_trend[1])   : up_lev
   Data$UP_Trend[i]<-ifelse(Data$smafilter[i-1]>Data$UP_Trend[i-1],max(Data$Up_Lev[i],Data$UP_Trend[i-1]),Data$Up_Lev[i])
+  
   #down_trend :=                       close[1] < down_trend[1] ?         min(dn_lev,                     down_trend[1]) : dn_lev
   Data$down_Trend[i]<-ifelse(Data$smafilter[i-1]<Data$down_Trend[i-1],min(Data$Dn_Lev[i],Data$down_Trend[i-1]),Data$Dn_Lev[i])
+  
   # trend :=                      close >            down_trend[1] ? 1:                 close < up_trend[1] ? -1 : nz(trend[1], 1)
   if (as.numeric(Data$smafilter[i])>as.numeric(Data$down_Trend[i-1])) {
+    
     Data$LimiteConfianza[i]<-Data$down_Trend[i-1]
     Data$Posicion[i]<-"Long"
+    
   }else{
     if (as.numeric(Data$smafilter[i])<as.numeric(Data$UP_Trend[i-1])) {
+      
       Data$LimiteConfianza[i]<-Data$UP_Trend[i-1]
       Data$Posicion[i]<-"Short"
+      
     }else{
+      
       Data$LimiteConfianza[i]<-Data$LimiteConfianza[i-1]
       #Data$Posicion[i]<-substr(Data$Posicion[i-1], 1, 1) 
       Data$Posicion[i]<-Data$Posicion[i-1]  
+      
     }
   }
   #Data$AcumRLog$A[i]<-ifelse(Data$Posicion[i]=="L",Data$RetLog[i]+Data$AcumRLog[i-1],-Data$RetLog[i]+Data$AcumRLog[i-1])
@@ -71,8 +82,26 @@ for (i in c(starting:nrow(Data))) {
   #
   #Data$AcumRLogC[i]<-ifelse(Data$Posicion[i]=="Short",Data$RetLog[i]+Data$AcumRLogC[i-1],
   #                           ifelse(Data$Posicion[i]=="Long",-Data$RetLog[i]+Data$AcumRLogC[i-1],+Data$AcumRLogC[i-1]))
-  Data$AcumRLogTotal[i]<-ifelse((Data$Posicion[i]=="Long"&Data$Posicion[i]==Data$Posicion[i-1])|(Data$Posicion[i]=="Short"&Data$Posicion[i-1]=="Long"),Data$RetLog[i]+Data$AcumRLogTotal[i-1],
-                             ifelse((Data$Posicion[i]=="Short"&Data$Posicion[i]==Data$Posicion[i-1])|(Data$Posicion[i]=="Long"&Data$Posicion[i-1]=="Short"),-Data$RetLog[i]+Data$AcumRLogTotal[i-1],+Data$AcumRLogTotal[i-1]))
+  
+  Data$AcumRLogTotal[i]<-ifelse(
+  (Data$Posicion[i]=="Long" & Data$Posicion[i]==Data$Posicion[i-1])
+  |
+  (Data$Posicion[i]=="Short"&Data$Posicion[i-1]=="Long")
+  ,Data$RetLog[i]+Data$AcumRLogTotal[i-1],
+  ifelse(
+  (Data$Posicion[i]=="Short"&Data$Posicion[i]==Data$Posicion[i-1])
+  |
+  (Data$Posicion[i]=="Long"&Data$Posicion[i-1]=="Short"),
+  -Data$RetLog[i]+Data$AcumRLogTotal[i-1],
+  +Data$AcumRLogTotal[i-1]))
+  
+  #Se considera que la vela en el que se ejecuta el cambio es el FIN de la operacion anterior
+  Data$NOperacion[i]<-ifelse(Data$Posicion[i]==Data$Posicion[i-1]&Data$Posicion[i-1]!=Data$Posicion[i-2],
+                             Data$NOperacion[i-1]+1,Data$NOperacion[i-1]
+  )
+  Data$NdiaOperacion[i]<-ifelse(Data$Posicion[i]==Data$Posicion[i-1]&Data$Posicion[i-1]!=Data$Posicion[i-2],
+                                  1,Data$NdiaOperacion[i-1]+1
+  )
 }
 
 
@@ -83,8 +112,25 @@ Data%>%
   #filter(Datetime>"2020-09-22 02:00:00")%>%
   #ggplot(aes(x=Datetime,y = LimiteConfianza,colour=Posicion))+geom_point(aes(x=Datetime,y=Close))+geom_line(aes(x=Datetime,y = LimiteConfianza))
   ggplot(aes(x=Datetime,y = AcumRLogTotal,colour=Posicion))+geom_point()
+Data%>%
+  filter(Posicion!="Pending")%>%
+  group_by(NdiaOperacion,Posicion)%>%
+  summarise(sum=mean(RetLog))%>%
+  ggplot(aes(x=NdiaOperacion,y=sum,fill=Posicion))+geom_col()
 
+Data%>%
+  filter(Posicion!="Pending")%>%
+  group_by(NOperacion,Posicion)%>%
+  summarise(sum=sum(RetLog),sd=sd(RetLog),S=sum/sd)%>%
+  ggplot(aes(x=sd,y=sum,colour=Posicion))+geom_point()
+Data%>%
+  
+  group_by(NOperacion,Posicion)%>%
+  summarise(sum=sum(RetLog),sd=sd(RetLog),S=sum/sd)%>%
+  filter(S>-5)%>%
+  ggplot(aes(x=S,fill=Posicion))+geom_density(alpha=0.5)
 
+max(Data$NOperacion)
 table(Data$Posicion)/nrow(Data)*100
 
 sum(Data$RetLog[Data$Posicion=="L"])
