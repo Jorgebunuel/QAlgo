@@ -6,7 +6,7 @@ source(file = paste0(masterPath,"Librerias/all.R"))
 source(file = paste0(masterPath,"BIBLIOTECA/ReadFunXTB.R"))
 
 #2v0 datos ##############################################################
-Data<-LecturaXTBForex("EURUSD","1D")
+Data<-LecturaXTBForex("EURUSD","1h")
 #2v0 datos ##############################################################
 
 #3v0 Indicadores ##############################################################
@@ -16,6 +16,7 @@ dsma<-3
 #############################################
 Data$aux<-(c(NULL,Lag(Data$Close,1)))
 Data$RetLog<-log(Data$Close/Data$aux)
+
 
 Data$AcumRLogTotal<-0
 Data$AcumRLogB<-0
@@ -105,7 +106,7 @@ for (i in c(starting:nrow(Data))) {
 }
 
 
-#write.csv(Data,"D:/DATOS_GESTAMP/jorge_datos/TRADING_QUANTITATIVO/01Dise?oSistema/ESTRATEGIAS/limiteconfi.txt")
+write.csv(Data,"D:/DATOS_GESTAMP/jorge_datos/TRADING_QUANTITATIVO/01DiseñoSistema/QAlgo/limiteconfi.txt")
 
 Data%>%
   #filter(LimiteConfianza>1.08)%>%
@@ -123,6 +124,7 @@ Data%>%
   group_by(NOperacion,Posicion)%>%
   summarise(sum=sum(RetLog),sd=sd(RetLog),S=sum/sd)%>%
   ggplot(aes(x=sd,y=sum,colour=Posicion))+geom_point()
+
 Data%>%
   
   group_by(NOperacion,Posicion)%>%
